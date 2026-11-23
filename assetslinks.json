@@ -1,0 +1,8 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.kevinmorgan.cgpacalc",
+    "sha256_cert_fingerprints": ["FA:EE:6D:43:44:22:E5:3B:F7:1E:1D:08:8E:93:B0:DB:B2:1E:72:1D:28:5C:43:6D:85:D3:C6:2A:B7:B4:9E:74"]
+  }
+}]
