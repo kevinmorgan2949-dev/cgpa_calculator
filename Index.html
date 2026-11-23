@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <!-- Makes the page fit phone screens -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CGPA Calculator</title>
+
+  <!-- These 3 lines make it behave like an app -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0a7d3b">
+  <link rel="icon" href="icon-192.png">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: #0a7d3b;
+      color: white;
+      text-align: center;
+      padding: 16px;
+    }
+    header h1 { margin: 0; font-size: 22px; }
+    .container { padding: 16px; max-width: 500px; margin: auto; }
+    .row { display: flex; gap: 8px; margin-bottom: 10px; }
+    input, select {
+      flex: 1;
+      padding: 12px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      min-width: 0;
+    }
+    button {
+      background: #0a7d3b;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      width: 100%;
+      margin-top: 6px;
+    }
+    button.remove {
+      background: #d9534f;
+      width: auto;
+      margin: 0;
+      padding: 12px;
+    }
+    button.clear { background: #777; }
+    .result {
+      background: white;
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 16px;
+      text-align: center;
+    }
+    .result h2 { margin: 0; font-size: 36px; color: #0a7d3b; }
+    .result p { margin: 6px 0 0; color: #555; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>CGPA Calculator</h1>
+  </header>
+
+  <div class="container">
+    <p>Add your courses. Choose the units and your grade (5-point scale).</p>
+
+    <!-- The course rows get added here by JavaScript -->
+    <div id="courses"></div>
+
+    <button onclick="addCourse()">+ Add course</button>
+    <button onclick="calculate()">Calculate CGPA</button>
+    <button class="clear" onclick="clearAll()">Clear all</button>
+
+    <div class="result">
+      <h2 id="cgpa">0.00</h2>
+      <p id="classText">Your CGPA</p>
+      <p id="unitsText"></p>
+    </div>
+  </div>
+
+  <script>
+    // Grade points on the Nigerian 5-point scale
+    var grades = { A: 5, B: 4, C: 3, D: 2, E: 1, F: 0 };
+
+    // Adds one row (units + grade + remove button)
+    function addCourse(units, grade) {
+      var row = document.createElement("div");
+      row.className = "row";
+
+      var gradeOptions = "";
+      for (var g in grades) {
+        var selected = (g === grade) ? "selected" : "";
+        gradeOptions += '<option value="' + g + '" ' + selected + '>' + g + '</option>';
+      }
+
+      row.innerHTML =
+        '<input type="number" class="units" placeholder="Units" min="1" max="10" value="' + (units || "") + '">' +
+        '<select class="grade">' + gradeOptions + '</select>' +
+        '<button class="remove" onclick="removeCourse(this)">X</button>';
+
+      document.getElementById("courses").appendChild(row);
+    }
+
+    function removeCourse(btn) {
+      btn.parentElement.remove();
+      calculate();
+    }
+
+    // Does the maths: total (units x grade point) divided by total units
+    function calculate() {
+      var rows = document.querySelectorAll("#courses .row");
+      var totalPoints = 0;
+      var totalUnits = 0;
+      var saved = [];
+
+      rows.forEach(function (row) {
+        var units = parseFloat(row.querySelector(".units").value);
+        var grade = row.querySelector(".grade").value;
+        if (units > 0) {
+          totalPoints += units * grades[grade];
+          totalUnits += units;
+          saved.push({ units: units, grade: grade });
+        }
+      });
+
+      var cgpa = totalUnits > 0 ? totalPoints / totalUnits : 0;
+      document.getElementById("cgpa").textContent = cgpa.toFixed(2);
+      document.getElementById("classText").textContent = classOf(cgpa, totalUnits);
+      document.getElementById("unitsText").textContent = totalUnits > 0 ? "Total units: " + totalUnits : "";
+
+      // Save so the data is still there when the app is reopened
+      try { localStorage.setItem("courses", JSON.stringify(saved)); } catch (e) {}
+    }
+
+    // Class of degree
+    function classOf(cgpa, units) {
+      if (units === 0) return "Your CGPA";
+      if (cgpa >= 4.5) return "First Class";
+      if (cgpa >= 3.5) return "Second Class Upper";
+      if (cgpa >= 2.4) return "Second Class Lower";
+      if (cgpa >= 1.5) return "Third Class";
+      return "Pass / Below";
+    }
+
+    function clearAll() {
+      document.getElementById("courses").innerHTML = "";
+      try { localStorage.removeItem("courses"); } catch (e) {}
+      addCourse();
+      calculate();
+    }
+
+    // When the app opens: load saved courses, or start with 3 empty rows
+    var saved = [];
+    try { saved = JSON.parse(localStorage.getItem("courses")) || []; } catch (e) {}
+    if (saved.length > 0) {
+      saved.forEach(function (c) { addCourse(c.units, c.grade); });
+      calculate();
+    } else {
+      addCourse(); addCourse(); addCourse();
+    }
+
+    // Registers the service worker so the app works offline
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("sw.js");
+    }
+  </script>
+
+</body>
+</html>
