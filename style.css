@@ -1,0 +1,12 @@
+body { font-family: Arial, sans-serif; background: #f5f5f5; margin: 0; padding: 0; }
+header { background: #0a7d3b; color: white; text-align: center; padding: 16px; }
+header h1 { margin: 0; font-size: 22px; }
+.container { padding: 16px; max-width: 500px; margin: auto; }
+.row { display: flex; gap: 8px; margin-bottom: 10px; }
+input, select { flex: 1; padding: 12px; font-size: 16px; border: 1px solid #ccc; border-radius: 8px; min-width: 0; }
+button { background: #0a7d3b; color: white; padding: 12px 20px; border: none; border-radius: 8px; font-size: 16px; width: 100%; margin-top: 6px; }
+button.remove { background: #d9534f; width: auto; margin: 0; padding: 12px; }
+button.clear { background: #777; }
+.result { background: white; border-radius: 12px; padding: 16px; margin-top: 16px; text-align: center; }
+.result h2 { margin: 0; font-size: 36px; color: #0a7d3b; }
+.result p { margin: 6px 0 0; color: #555; }

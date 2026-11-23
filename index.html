@@ -2,66 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <!-- Makes the page fit phone screens -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>CGPA Calculator</title>
-
-  <!-- These 3 lines make it behave like an app -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0a7d3b">
   <link rel="icon" href="icon-192.png">
-
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f5f5f5;
-      margin: 0;
-      padding: 0;
-    }
-    header {
-      background: #0a7d3b;
-      color: white;
-      text-align: center;
-      padding: 16px;
-    }
-    header h1 { margin: 0; font-size: 22px; }
-    .container { padding: 16px; max-width: 500px; margin: auto; }
-    .row { display: flex; gap: 8px; margin-bottom: 10px; }
-    input, select {
-      flex: 1;
-      padding: 12px;
-      font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      min-width: 0;
-    }
-    button {
-      background: #0a7d3b;
-      color: white;
-      padding: 12px 20px;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      width: 100%;
-      margin-top: 6px;
-    }
-    button.remove {
-      background: #d9534f;
-      width: auto;
-      margin: 0;
-      padding: 12px;
-    }
-    button.clear { background: #777; }
-    .result {
-      background: white;
-      border-radius: 12px;
-      padding: 16px;
-      margin-top: 16px;
-      text-align: center;
-    }
-    .result h2 { margin: 0; font-size: 36px; color: #0a7d3b; }
-    .result p { margin: 6px 0 0; color: #555; }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -72,7 +18,6 @@
   <div class="container">
     <p>Add your courses. Choose the units and your grade (5-point scale).</p>
 
-    <!-- The course rows get added here by JavaScript -->
     <div id="courses"></div>
 
     <button onclick="addCourse()">+ Add course</button>
@@ -87,10 +32,8 @@
   </div>
 
   <script>
-    // Grade points on the Nigerian 5-point scale
     var grades = { A: 5, B: 4, C: 3, D: 2, E: 1, F: 0 };
 
-    // Adds one row (units + grade + remove button)
     function addCourse(units, grade) {
       var row = document.createElement("div");
       row.className = "row";
@@ -114,7 +57,6 @@
       calculate();
     }
 
-    // Does the maths: total (units x grade point) divided by total units
     function calculate() {
       var rows = document.querySelectorAll("#courses .row");
       var totalPoints = 0;
@@ -136,11 +78,9 @@
       document.getElementById("classText").textContent = classOf(cgpa, totalUnits);
       document.getElementById("unitsText").textContent = totalUnits > 0 ? "Total units: " + totalUnits : "";
 
-      // Save so the data is still there when the app is reopened
       try { localStorage.setItem("courses", JSON.stringify(saved)); } catch (e) {}
     }
 
-    // Class of degree
     function classOf(cgpa, units) {
       if (units === 0) return "Your CGPA";
       if (cgpa >= 4.5) return "First Class";
@@ -157,7 +97,6 @@
       calculate();
     }
 
-    // When the app opens: load saved courses, or start with 3 empty rows
     var saved = [];
     try { saved = JSON.parse(localStorage.getItem("courses")) || []; } catch (e) {}
     if (saved.length > 0) {
@@ -167,7 +106,6 @@
       addCourse(); addCourse(); addCourse();
     }
 
-    // Registers the service worker so the app works offline
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("sw.js");
     }
